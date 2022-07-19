@@ -26,6 +26,8 @@ Name/alias matches were done after removing special characters `-`, `.`, `,`, an
 
 ## Usage
 
+- Python version = 3.8
+
 - Create a virual environment (optional):
 
 ```bash

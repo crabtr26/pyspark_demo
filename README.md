@@ -39,8 +39,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-- Run the app:
-
+- Run the app using python:
 ```bash
 python app.py
+```
+
+- Or run the app using spark-submit:
+
+```bash
+spark-submit --master local[*] app.py
 ```

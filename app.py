@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
-from pyspark import SparkConf, SparkContext
+from pyspark.sql import SparkSession
 
 
 @dataclass
@@ -42,8 +42,8 @@ class Record:
 
 def main():
 
-    conf = SparkConf().setAppName("demo").setMaster("local[*]")
-    sc = SparkContext(conf=conf)
+    spark = SparkSession.builder.appName("sparkDemo").getOrCreate()
+    sc = spark.sparkContext
 
     # Map each line in the jsonl file to a 'Record' type with standard attributes
     gbr = sc.textFile("data/gbr.jsonl").map(standardize_record)
@@ -292,14 +292,15 @@ def get_id_matches(potential_match: Tuple[Record, Record]) -> List[Dict]:
 
 def clean_name(name: str) -> str:
 
-    clean_name = (
+    new_name = (
         name.lower()
         .replace("-", " ")
         .replace(".", "")
         .replace(",", "")
         .replace("'", "")
     )
-    return clean_name
+
+    return new_name
 
 
 def drop_duplicates(output_record: Dict) -> Dict:
@@ -309,9 +310,9 @@ def drop_duplicates(output_record: Dict) -> Dict:
         {"gbr_id": output_record["gbr_id"], "ofac_id": output_record["ofac_id"]}
     )
     all_matches = output_record["matches"]
-    s = pd.Series(all_matches)
-    unique_matches = s.drop_duplicates().to_list()
+    unique_matches = pd.Series(all_matches).drop_duplicates().to_list()
     new_record["matches"] = unique_matches
+
     return new_record
 
 
